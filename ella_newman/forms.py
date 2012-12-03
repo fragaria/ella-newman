@@ -7,6 +7,7 @@ from ella_two_ports.cache.utils import get_cached_list
 from ella.core.models import Category
 from ella_newman.models import DenormalizedCategoryUserRole, AdminUserDraft
 from ella_newman import widgets
+from ella_newman.conf import newman_settings
 
 class DraftForm(forms.Form):
 
@@ -48,35 +49,16 @@ class ErrorReportForm(forms.Form):
     err_subject = forms.CharField(label=_('Subject'))
     err_message = forms.CharField(label=_('Message'), widget=forms.Textarea)
 
-BOX_PHOTO_SIZES = (
-    ('velka', _('Big')),
-    ('standard', _('Standard')),
-    ('mala', _('Small')),
-)
-
-BOX_PHOTO_FORMATS = (
-    ('ctverec', _('Square')),
-    ('obdelnik_sirka', _('Rectangle to width')),
-    ('obdelnik_vyska', _('Rectangle to height')),
-    ('nudle_sirka', _('Noodle to width')),
-    ('nudle_vyska', _('Noodle to height')),
-)
-
-BOX_TYPES = (
-    ('link', _('Link')),
-    ('inline', _('Inline')),
-)
 
 class EditorBoxForm(forms.Form):
     box_obj_ct = forms.ModelChoiceField(ContentType.objects.all(), None, cache_choices=True, required=True, widget=widgets.ContentTypeWidget, label='')
     box_obj_id = forms.IntegerField(label='', min_value=0, widget=widgets.ForeignKeyGenericRawIdWidget)
-    box_photo_size = forms.ChoiceField(choices=BOX_PHOTO_SIZES, required=False, label=_('Size'), initial='standard')
-    box_photo_format = forms.ChoiceField(choices=BOX_PHOTO_FORMATS, required=False, label=_('Format'), initial='obdelnik_sirka')
+    box_photo_format = forms.ChoiceField(choices=newman_settings.BOX_PHOTO_FORMATS, required=False, label=_('Format'), initial='full_size')
     box_photo_meta_show_title = forms.BooleanField(required=False, label=_('Title'))
     box_photo_meta_show_authors = forms.BooleanField(required=False, label=_('Author'))
     box_photo_meta_show_source = forms.BooleanField(required=False, label=_('Source'))
     box_photo_meta_show_description = forms.BooleanField(required=False, label=_('Description'))
     box_photo_meta_show_detail = forms.BooleanField(required=False, label=_('Magnifying'))
-    box_type = forms.ChoiceField(choices=BOX_TYPES, required=False, label=_('Box type'), initial='link')
+    box_type = forms.ChoiceField(choices=newman_settings.BOX_TYPES, required=False, label=_('Box type'), initial='link')
     box_obj_params = forms.CharField(label=_('Extra parameters'), max_length=300, required=False, widget=forms.Textarea(attrs={'rows': 3, 'style': 'width:98%'}))
 

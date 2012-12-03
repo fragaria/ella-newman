@@ -1,6 +1,6 @@
-/** 
+/**
  * Newman specific things used in conjunction with Kobayashi.
- * requires: jQuery 1.4.2+, 
+ * requires: jQuery 1.4.2+,
  *          gettext() function.
  *          carp(),
  *          adr(),
@@ -48,7 +48,7 @@ if (typeof console != 'object') {
 /** Useful when method of an object should be used as jQuery event handler.
  *  Example:
  *  $(document).bind('hashchange', this_decorator(this, this.method) );
- * 
+ *
  *  Is much better than:
  *  var me = this;
  *  $(document).bind('hashchange', function () { me.method(); } );
@@ -267,8 +267,8 @@ $( function() {
 
 $(function(){Kobayashi.reload_content('content');});
 
-function media_loading_start_handler() { 
-    //timer('media_loading'); 
+function media_loading_start_handler() {
+    //timer('media_loading');
     lock_window( str_concat(gettext('Loading media'), '...') );
 }
 
@@ -581,7 +581,7 @@ Drafts = new Object;
 
 $( function() {
     //// Ajax forms
-    
+
     /**
      * Adds serializeObject method to elements. When called on forms, it results
      * in form being serialized into JSON object {name:value, name2: value2}.
@@ -663,7 +663,7 @@ $( function() {
 
         return ok;
     }
-    
+
     function clean_inputs($form) {
         var $inputs = $('#absolutely#_nothing');
         get_inputs($form).each( function() {
@@ -686,7 +686,7 @@ $( function() {
         return $inputs;
     }
     AjaxFormLib.clean_inputs = clean_inputs;
-    
+
     function clean_inputs_with_files($form) {
         // Shave off the names from suggest-enhanced hidden inputs
         $form.find('input:hidden').each( function() {
@@ -1616,7 +1616,7 @@ $( function() {
                 selection_callback: selection_callback
             });
         }
-        
+
         // init
         init_overlay_html();
 
@@ -1624,7 +1624,7 @@ $( function() {
     }
 
     var overlay_html;
-    
+
     open_overlay = OverlayOpener;
     $('.overlay-closebutton').live('click', function() {
         $(this).closest('.overlay').css({zIndex:5}).hide()
@@ -1983,7 +1983,7 @@ Timeline = new Object();
             var to_url = $(this).attr('href');
             // remove /#  from to_url
             to_url = remove_beginning_char(to_url);
-            to_url = remove_beginning_char(to_url, '#'); 
+            to_url = remove_beginning_char(to_url, '#');
             from_url = remove_beginning_char(from_url);
 
             NewmanLib.ADR_STACK = [
@@ -2115,7 +2115,7 @@ var changelist_main_category_filter = null;
     function display_main_category_filter_in_homepage() {
         // jquery changes context for display method to selector's target, so
         // calling .display() must be wrapped in another function.
-        hp_main_category_filter.display(); 
+        hp_main_category_filter.display();
     }
 
     function display_main_category_filter_in_changelist() {
@@ -2143,7 +2143,7 @@ var changelist_main_category_filter = null;
     }
 
     function register_filters_show_click() {
-        $('.icn.btn.filter').live( 'click', 
+        $('.icn.btn.filter').live( 'click',
             function() {
                 var $filters = $('div#filters');
                 $filters.unbind('content_added', filters_content_added);
@@ -2162,7 +2162,7 @@ var changelist_main_category_filter = null;
 NewmanLib.adr_stack_default_push_callback = function(evt) {
     if (evt.button != 0) return;
     evt.preventDefault();   // FIXME: remove
-    
+
     var came_from_rich_editor = (function() {
         var initial_input_id = $('#overlay-content').data('input_id');
         var $initial_input = $( '#' + initial_input_id );
@@ -2177,7 +2177,7 @@ NewmanLib.adr_stack_default_push_callback = function(evt) {
         }
         else return false;
     })();
-    
+
     var $change_form = $('.change-form');
     var onsave_callback, onreturn_callback;
     if ($(this).is('.js-custom-adrstack-callbacks')) {
@@ -2205,7 +2205,7 @@ NewmanLib.adr_stack_default_push_callback = function(evt) {
     if (form_data === undefined) {
         form_data = JSON.stringify( {data: $change_form.serializeArray()} );
     }
-    
+
     NewmanLib.ADR_STACK.push( {
         from: evt.referer || get_hashadr(''),
         to: get_hashadr($(this).attr('href')),
@@ -2215,7 +2215,7 @@ NewmanLib.adr_stack_default_push_callback = function(evt) {
         onreturn: onreturn_callback,
         invoked_from_rich_textarea: came_from_rich_editor
     } );
-    
+
     // FIXME: remove block (.js-hashadr or another class should take care of this)
     if (adr( $(this).attr('href'), {just_get: 'hash'} ) == location.hash) {
         Kobayashi.reload_content(Kobayashi.DEFAULT_TARGET);
@@ -2241,16 +2241,16 @@ NewmanLib.adr_stack_default_onreturn_callback = function(popped, action_table) {
     });
     if (popped.oid) {
         $(document).one('media_loaded', function() {
-            
+
             popped.selection_callback(popped.oid,{str: popped.str});
-            
+
             // .rich_text_area (like article's perex) can insert boxes
             // in case we're coming with a new object that's to be inserted
             // into a rich textarea as a box, do insert it, focus and fetch preview
             if (popped.invoked_from_rich_textarea) {
                 var $rta = $( '#' + popped.invoked_from_rich_textarea.textarea_id );
                 if ($rta.length == 1) {
-                    
+
                     var ct = AVAILABLE_CONTENT_TYPES[
                         popped.invoked_from_rich_textarea.content_type
                     ]
@@ -2258,7 +2258,7 @@ NewmanLib.adr_stack_default_onreturn_callback = function(popped, action_table) {
                     .split('/')
                     .slice(1,3)
                     .join('.');
-                    
+
                     $rta.val(
                         $rta.val()
                         + '{% box '
@@ -2269,7 +2269,7 @@ NewmanLib.adr_stack_default_onreturn_callback = function(popped, action_table) {
                         + popped.oid
                         + ' %}{% endbox %}'
                     );
-                    
+
                     $rta.focus();
                     $('.markItUpButton.preview').click();
                 }

@@ -1,7 +1,7 @@
-/** 
+/**
  * Text Area powered by callbacks.
- * requires: jQuery 1.4.2+, 
- *          gettext() function, 
+ * requires: jQuery 1.4.2+,
+ *          gettext() function,
  *          log_ntarea object (initialized in fuckitup.js),
  *          ContentElementViewportDetector object (utils.js).
  *
@@ -39,19 +39,22 @@ function install_box_editor() {
                 $('#id_box_obj_id').val(id);
             });
         });
+
         $('#rich-object').bind('submit', function(e) {
             e.preventDefault();
             if($('#id_box_obj_ct').val()) {
                 var type = getTypeFromPath($('#id_box_obj_ct').val());
+
                 if(!!type){
                     var id = $('#id_box_obj_id').val() || '0';
                     var params = $('#id_box_obj_params').val().replace(/\n+/g, ' ');
                     // Add format and size info for photo
                     var addon = '';
                     var box_type = '';
-                    if(getTypeFromPath($('#id_box_obj_ct').val()) == 'photos.photo'){
-                        addon = '_'+$('#id_box_photo_size').val()+'_'+$('#id_box_photo_format').val();
-                        box_type = 'inline';
+
+                    if (getTypeFromPath($('#id_box_obj_ct').val()) == 'photos.photo'){
+                        box_type = $('#id_box_photo_format').val();
+
                         // Add extra parameters
                         $('.photo-meta input[type=checkbox]:checked','#rich-photo-format').each(function(){
                             params += ((params) ? '\n' : '') + $(this).attr('name').replace('box_photo_meta_','') + ':1';
@@ -59,6 +62,7 @@ function install_box_editor() {
                     } else {
                         box_type = $('#id_box_type').val();
                     }
+
                     // Insert code
                     var selection_handler = TextAreaSelectionHandler();
                     newman_textarea_focused.focus();
@@ -80,11 +84,13 @@ function install_box_editor() {
                 }
             }
         });
+
         $('#rich-object').bind('cancel_close', function(e) {
             $('#rich-box').dialog('close');
             newman_textarea_focused.focus(); // after all set focus to text area
         });
     });
+
     $('#rich-box').dialog({
         modal: false,
         autoOpen: false,
@@ -206,7 +212,7 @@ function handle_preview(evt, toolbar) {
 
 function handle_box(evt, toolbar) {
     var me = toolbar;
-    
+
     if (!me.$text_area) {
         log_ntarea.log('NO TEXT AREA');
         return;
@@ -215,6 +221,7 @@ function handle_box(evt, toolbar) {
     var focused = me.$text_area;
     var range = focused.getSelection();
     var content = focused.val();
+
     if (content.match(/\{% box(.|\n)+\{% endbox %\}/g) && range.start != -1) {
         var start = content.substring(0,range.start).lastIndexOf('{% box');
         var end = content.indexOf('{% endbox %}',range.end);
@@ -227,38 +234,26 @@ function handle_box(evt, toolbar) {
             var params = box.replace(/^.+%\}\n?((.|\n)*)\{% endbox %\}$/,'$1');
             $('#id_box_obj_ct').val(getIdFromPath(type)).trigger('change');
             $('#id_box_obj_id').val(id);
+
             if (type == 'photos.photo') {
                 if(box.indexOf('show_title:1') != -1){
                     $('#id_box_photo_meta_show_title').attr('checked','checked');
                 } else $('#id_box_photo_meta_show_title').removeAttr('checked');
+
                 if(box.indexOf('show_authors:1') != -1){
                     $('#id_box_photo_meta_show_author').attr('checked','checked');
                 } else $('#id_box_photo_meta_show_author').removeAttr('checked');
+
                 if(box.indexOf('show_description:1') != -1){
                     $('#id_box_photo_meta_show_description').attr('checked','checked');
                 } else $('#id_box_photo_meta_show_description').removeAttr('checked');
+
                 if(box.indexOf('show_detail:1') != -1){
                     $('#id_box_photo_meta_show_detail').attr('checked','checked');
                 } else $('#id_box_photo_meta_show_detail').removeAttr('checked');
+
                 params = params.replace(/show_title:\d/,'').replace(/show_authors:\d/,'').replace(/show_description:\d/,'').replace(/show_detail:\d/,'').replace(/\n{2,}/g,'\n').replace(/\s{2,}/g,' ');
-                if(mode.indexOf('inline_velka') != -1){
-                    $('#id_box_photo_size').val('velka')
-                } else if(mode.indexOf('inline_standard') != -1){
-                    $('#id_box_photo_size').val('standard')
-                } else if(mode.indexOf('inline_mala') != -1){
-                    $('#id_box_photo_size').val('mala')
-                }
-                if(mode.indexOf('ctverec') != -1){
-                    $('#id_box_photo_format').val('ctverec')
-                } else if(mode.indexOf('obdelnik_sirka') != -1){
-                    $('#id_box_photo_format').val('obdelnik_sirka')
-                } else if(mode.indexOf('obdelnik_vyska') != -1){
-                    $('#id_box_photo_format').val('obdelnik_vyska')
-                } else if(mode.indexOf('nudle_sirka') != -1){
-                    $('#id_box_photo_format').val('nudle_sirka')
-                } else if(mode.indexOf('nudle_vyska') != -1){
-                    $('#id_box_photo_format').val('nudle_vyska')
-                }
+
             }
             $('#id_box_obj_params').val(params);
         }
@@ -296,9 +291,9 @@ function handle_unordered_list(evt, toolbar) {
     if (!sel) {
         var str = [
             '\n',
-            TEXT, 
-            TEXT, 
-            TEXT, 
+            TEXT,
+            TEXT,
+            TEXT,
         ].join('');
         toolbar.selection_handler.replace_selection(str);
         toolbar.trigger_delayed_preview();
@@ -491,14 +486,14 @@ var NewmanTextAreaStandardToolbar = function () {
                 error_thrown
             ].join('');
         }
-        
+
         var csrf_token = $('input[name=csrfmiddlewaretoken]').val();
         //alert(csrf_token);
         var csrf_data = [ 'csrfmiddlewaretoken', '=', encodeURIComponent(csrf_token) ].join('');
         var preview_data = [ PREVIEW_VARIABLE, '=', encodeURIComponent(me.$text_area.val()) ].join('');
         var final_data = [ preview_data, '&', csrf_data ].join('')
 
-        $.ajax( 
+        $.ajax(
             {
                 type: 'POST',
                 async: true,
@@ -508,7 +503,7 @@ var NewmanTextAreaStandardToolbar = function () {
                 data: final_data,
                 success: success_handler,
                 error: error_handler
-            } 
+            }
         );
         return res;
     }
@@ -554,7 +549,7 @@ var NewmanTextAreaStandardToolbar = function () {
         }
         //preview_window.focus();
     }
-    
+
     function handle_preview(evt) {
         var $iframe = me.$text_area.closest('.markItUpContainer').find('iframe.markItUpPreviewFrame');
         if ($iframe.length == 0) {
@@ -567,20 +562,20 @@ var NewmanTextAreaStandardToolbar = function () {
         render_preview(preview_show_callback);
         me.$text_area.focus();
     }
-    
+
     function trigger_preview() {
         handle_preview();
     }
     me.trigger_preview = trigger_preview;
-    
+
     function trigger_delayed_preview() {
         setTimeout(handle_preview, AUTO_PREVIEW_TOOLBAR_BUTTON_CLICKED_DELAY);
     }
     me.trigger_delayed_preview = trigger_delayed_preview;
-    
+
     function toolbar_buttons() {
         // creates NewmanTextAreaToolbar items.
-        
+
         for (name in toolbarButtonRegister.getButtonList()) {
             b = toolbarButtonRegister.getButton(name);
             me.add_item(b.title, name, b.alt);
@@ -701,7 +696,7 @@ var TextAreaFocusListener = function() {
             //log_ntarea.log('toolbar instances are equiv. Aborting.');
             return;
         }
-        show_toolbar($bar, $header);    
+        show_toolbar($bar, $header);
 
         // register handler for scroll event
         detector = new ContentElementViewportDetector($text_area);
@@ -722,7 +717,7 @@ textarea_focus_listener = TextAreaFocusListener(); // shared object among Custom
 
 var FloatingOneToolbar = function () {
     /**
-     * Toolbar floats in fix-positioned <div>. textarea_focus_listener 
+     * Toolbar floats in fix-positioned <div>. textarea_focus_listener
      * object handles showing and hiding of appropriate toolbar.
      * If textarea has focus (blinking caret) it's toolbar is shown, while
      * other textarea related toolbars are hidden.
@@ -777,7 +772,7 @@ $(function() {
             key_code = evt.keyCode || evt.which;
             key_code = parseInt(key_code);
             // auto refresh preview
-            if ( 
+            if (
                 (key_code >= KEY_0 && key_code <= KEY_9) ||
                 (key_code >= KEY_NUM_0 && key_code <= KEY_NUM_DIVIDE) ||
                 (key_code >= KEY_A && key_code <= KEY_Z) ||
@@ -821,6 +816,6 @@ $(function() {
         $('textarea.rich_text_area').autogrow();
         $('.change-form').data('textarea_handlers_installed', true);
     }
-    
+
     $(document).bind('media_loaded', media_loaded_handler);
 });

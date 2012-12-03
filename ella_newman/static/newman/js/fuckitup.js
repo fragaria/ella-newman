@@ -1,7 +1,7 @@
-/** 
+/**
  * Text Area powered by callbacks.
- * requires: jQuery 1.4.2+, 
- *          gettext() function, 
+ * requires: jQuery 1.4.2+,
+ *          gettext() function,
  *          str_concat() function (effective string concatenation),
  *          LoggingLib() object (utils.js).
  *
@@ -64,7 +64,7 @@ var TextAreaSelectionHandler = function () {
 			area.value = str_concat(
                 area.value.substring(0, selection_start) , text , area.value.substring(area.selectionEnd)
             );
-			area.setSelectionRange( 
+			area.setSelectionRange(
                 selection_start + text.length, selection_start + text.length
             );
 		}
@@ -121,14 +121,14 @@ var TextAreaSelectionHandler = function () {
 var NewmanTextAreaToolbar = function () {
     /**
      * Toolbar prototype. Should be overloaded by its copy (aka inheritance).
-     */ 
+     */
     var me = new Object();
     me.toolbar_generated = false;
     me.$header = $('<div class="markItUpHeader"></div>');
     var item_counter = 1;
     var $ul = $('<ul></ul>');
 
-   
+
     /**
      * toolbar_buttons function should be overloaded (and implemented).
      * This function is purposed to add toolbars' buttons and separators.
@@ -136,7 +136,7 @@ var NewmanTextAreaToolbar = function () {
     me.toolbar_buttons = function () {};
 
     /**
-     * Adds item to toolbar. Item consists of title, class name and 
+     * Adds item to toolbar. Item consists of title, class name and
      * optionaly access key may be used.
      */
     function add_item( title, class_name, access_key ) {
@@ -152,8 +152,8 @@ var NewmanTextAreaToolbar = function () {
             accessible_title = title;
         }
         var item = [
-            '<li class="markItUpButton markItUpButton', 
-            item_counter, 
+            '<li class="markItUpButton markItUpButton',
+            item_counter,
             ' ',
             class_name,
             '"><a onclick="javascript:return false;" title="',
@@ -231,7 +231,7 @@ var NewmanTextAreaToolbar = function () {
 
 var NewmanTextArea = function ($text_area, extending_configuration_object) {
     /*
-     Params:
+     Params:in
 
      $text_area   text area selected
      */
@@ -301,7 +301,7 @@ if ( typeof(jQuery) != 'undefined' ) {
             );
             return $(this);
         }
-        
+
         $.fn.markItUp = newman_textarea;
         $.fn.newmanTextArea = newman_textarea;
         $.fn.newmanTextAreaRemove = remove_newman_textarea;

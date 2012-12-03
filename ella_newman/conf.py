@@ -7,6 +7,8 @@ from ella.utils.settings import Settings
 
 URL_PREFIX = 'nm'
 
+gettext = lambda s: s
+
 DEFAULT_LIST_PER_PAGE = 25
 
 # AdminSettings
@@ -88,6 +90,16 @@ FAVORITE_ITEMS = (
 
 EDITOR_PREVIEW_CSS = None
 EDITOR_PREVIEW_TEMPLATE = None
+
+BOX_PHOTO_FORMATS = (
+    ('full_size', gettext('Full size')),
+    ('half_size', gettext('Half size')),
+)
+
+BOX_TYPES = (
+    ('link', gettext('Link')),
+    ('inline', gettext('Inline')),
+)
 
 # Widgets
 MEDIA_PREFIX = getattr(settings, 'STATIC_URL')
