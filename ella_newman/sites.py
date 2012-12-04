@@ -246,7 +246,7 @@ class NewmanSite(AdminSite):
         """
         from django.contrib.auth.models import User
 
-        ERROR_MESSAGE = _("Please enter a correct username and password. Note that both fields are case-sensitive.")
+        ERROR_MESSAGE = _("Please enter a correct email and password. Note that both fields are case-sensitive.")
         LOGIN_FORM_KEY = 'this_is_the_login_form'
 
         # If this isn't already the login page, display it.
@@ -256,7 +256,6 @@ class NewmanSite(AdminSite):
             else:
                 message = ""
             return self.display_login_form(request, message)
-            #return self.login(request)
 
         # Check that the user accepts cookies.
         if not request.session.test_cookie_worked():
@@ -266,23 +265,13 @@ class NewmanSite(AdminSite):
             request.session.delete_test_cookie()
 
         # Check the password.
-        username = request.POST.get('username', None)
+        email = request.POST.get('email', None)
         password = request.POST.get('password', None)
-        user = authenticate(username=username, password=password)
+
+        user = authenticate(email=email, password=password)
+
         if user is None:
             message = ERROR_MESSAGE
-            if u'@' in username:
-                # Mistakenly entered e-mail address instead of username? Look it up.
-                try:
-                    user = User.objects.get(email=username)
-                except (User.DoesNotExist, User.MultipleObjectsReturned):
-                    message = _("Usernames cannot contain the '@' character.")
-                else:
-                    if user.check_password(password):
-                        message = _("Your e-mail address is not your username."
-                                    " Try '%s' instead.") % user.username
-                    else:
-                        message = _("Usernames cannot contain the '@' character.")
             return self.display_login_form(request, message)
 
         # The user data is correct; log in the user in and continue.

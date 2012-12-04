@@ -17,7 +17,7 @@
 	    {% endif %}
 	    <form action="{{ app_path }}" method="post" id="login-form" class="login-form">{% csrf_token %}
 	      <div class="form-row">
-	        <label for="id_username">{% trans 'Username:' %}</label> <input type="text" class="text" name="username" id="id_username" />
+	        <label for="id_email">{% trans 'Email:' %}</label> <input type="text" class="text" name="email" id="id_email" />
 	      </div>
 	      <div class="form-row">
 	        <label for="id_password">{% trans 'Password:' %}</label> <input type="password" class="text" name="password" id="id_password" />
