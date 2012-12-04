@@ -1,6 +1,6 @@
-/** 
+/**
  * DateTime widget.
- * requires: jQuery 1.4.2+, 
+ * requires: jQuery 1.4.2+,
  *          str_concat() function (effective string concatenation).
  *
  */
@@ -92,18 +92,11 @@ function DateInput(input) {
 (function($) {
     $('span.js-dtpicker-trigger').live('click', function() {
         var $dtp = $('.datetimepicker');
-        var x = $(this).offset().left + $(this).width();
-        var y = simple_offset(this).top - $('#container').offset().top; // not $(this).offset().top because of scrolling fixed #container, in which the dtpicker also is
         var $input = $(this).data('input');
 
-        // check if Y doesn't reach below the current screen height
-        var d = y + $dtp.outerHeight()  -  $(window).outerHeight();
-        if (d > 0) y -= d;
-        if (y < 0) y = 0;   // But rather reach below bottom than above top
-
-        $('.datetimepicker').css({
-            top : y + 'px',
-            left: x + 'px'
+        $dtp.css({
+            top : simple_offset(this).top - $('#container').offset().top + 'px',
+            left: $(this).offset().left + $(this).width() + 'px'
         }).toggle().data( 'input', $input );
     });
 
@@ -158,7 +151,8 @@ function DateInput(input) {
                evt.type == 'content_added'  // and we added something that uses a datepicker
             && $(evt.target).find('.js-dtpicker-trigger').length == 0    // if anything
         ) { }
-        else {
+        else {        var $dtp = $('.datetimepicker');
+
             // Container creation
             var $dtpicker = $('<div class="datetimepicker">');
 
@@ -181,8 +175,7 @@ function DateInput(input) {
             $datepicker.appendTo($dtpicker);
 
             // Time picker
-            var $timepicker = $('<div class="timepicker">')
-            .html(timepicker_html).appendTo($dtpicker);
+            var $timepicker = $('<div class="timepicker">').html(timepicker_html).appendTo($dtpicker);
 
 
             // Container placement
@@ -203,8 +196,11 @@ function DateInput(input) {
         var dti = $( $(this).closest('.datetimepicker').data('input') ).data('dti');
         var selected_time = /js-time-(\d\d)(\d\d)/.exec(this.className);
         var d = new Date();
+        var opts = {};
+
         d.setSeconds(0);
         d.setMilliseconds(0);
+
         if ( ! selected_time ) {
             if ( ! $(this).hasClass('js-time-now') ) return;
         }
@@ -213,8 +209,11 @@ function DateInput(input) {
             var selected_minutes = selected_time[2];
             d.setHours  (selected_hours  );
             d.setMinutes(selected_minutes);
+            opts['date'] = true;
         }
-        dti.set_date(d, {/*preserve*/date:true});
+
+        dti.set_date(d, opts);
+
         $(this).closest('.datetimepicker').hide();
     });
 
