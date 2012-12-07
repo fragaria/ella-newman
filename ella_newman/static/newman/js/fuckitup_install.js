@@ -314,7 +314,7 @@ function handle_unordered_list(evt, toolbar) {
     }
     var str = bullet_lines.join('\n');
     toolbar.selection_handler.replace_selection(str);
-    toolbar.trigger_delayed_preview();
+    toolbar.trigger_delayed_preview();'
 }
 
 function handle_ordered_list(evt, toolbar) {
