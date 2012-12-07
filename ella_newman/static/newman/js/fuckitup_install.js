@@ -285,6 +285,10 @@ function handle_photo(evt, toolbar) {
     $('#lookup_id_box_obj_id').trigger('click');
 }
 
+function handle_cite(evt, toolbar) {
+    toolbar.selection_handler.replace_selection("\n<blockquote>CITACE</blockquote><cite>AUTOR</cite>\n");
+}
+
 function handle_unordered_list(evt, toolbar) {
     var TEXT = '* text\n';
     var sel = toolbar.selection_handler.get_selection();
@@ -424,6 +428,7 @@ function handle_url(evt, toolbar) {
 toolbarButtonRegister.addButton(gettext('Italic'), 'italic', handle_italic, 'I');
 toolbarButtonRegister.addButton(gettext('Bold'), 'bold', handle_bold, 'B');
 toolbarButtonRegister.addButton(gettext('Link'), 'url', handle_url, 'L');
+toolbarButtonRegister.addButton(gettext('Cite'), 'cite', handle_cite, 'C');
 
 toolbarButtonRegister.addButton(gettext('Head 1'), 'h1', handle_h1, '1');
 toolbarButtonRegister.addButton(gettext('Head 2'), 'h2', handle_h2, '2');

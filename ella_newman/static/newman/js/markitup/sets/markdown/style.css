@@ -11,6 +11,9 @@
 .markItUpHeader .url a {
     background-image:url(images/link.png);
 }
+.markItUpHeader .cite a {
+    background-image:url(images/quote.png);
+}
 
 .markItUpHeader .h1 a {
     background-image:url(images/h1.png);
