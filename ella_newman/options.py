@@ -132,7 +132,7 @@ def formfield_for_dbfield_factory(cls, db_field, **kwargs):
 
 from django.contrib.admin.helpers import InlineAdminForm, InlineAdminFormSet
 class InlineNewmanFormset(InlineAdminFormSet):
-    
+
     def __iter__(self):
         for form, original in zip(self.formset.initial_forms, self.formset.get_queryset()):
             yield InlineAdminForm(self.formset, form, self.fieldsets,
@@ -1028,7 +1028,7 @@ class NewmanPrettyInline(NewmanInlineModelAdmin):
     template = 'newman/edit_inline/pretty.html'
 
 
-_thumb_format = '--unset--' 
+_thumb_format = '--unset--'
 def get_thumb_format():
     global _thumb_format
     from ella.photos.models import Format

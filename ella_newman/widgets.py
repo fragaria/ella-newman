@@ -70,7 +70,7 @@ class NewmanRichTextAreaWidget(RichTextAreaWidget):
     def __init__(self, attrs={}):
         css_class = CLASS_RICHTEXTAREA
         super(RichTextAreaWidget, self).__init__(attrs={'class': css_class})
-        
+
     def _media(self):
         return forms.Media(
             js=[

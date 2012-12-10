@@ -205,6 +205,8 @@ var toolbarButtonRegister = (function() {
     };
 })();
 
+
+
 function handle_preview(evt, toolbar) {
     if (!toolbar) return;
     toolbar.trigger_preview();
@@ -314,7 +316,7 @@ function handle_unordered_list(evt, toolbar) {
     }
     var str = bullet_lines.join('\n');
     toolbar.selection_handler.replace_selection(str);
-    toolbar.trigger_delayed_preview();'
+    toolbar.trigger_delayed_preview();
 }
 
 function handle_ordered_list(evt, toolbar) {
@@ -814,6 +816,7 @@ $(function() {
         log_ntarea.log('INSTALLING TEXTAREA HANDLERS...');
         // enable NewmanTextArea (replacement for markItUp!)
         install_box_editor();
+
         $('.rich_text_area').newmanTextArea(newman_text_area_settings);
 
         $('.markItUpEditor').each(register_textarea_events);

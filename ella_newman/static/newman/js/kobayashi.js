@@ -1,6 +1,6 @@
-/** 
+/**
  * Kobayashi AJAX powered content injection framework.
- * requires: jQuery 1.4.2+, 
+ * requires: jQuery 1.4.2+,
  *          gettext() function,
  *          try_decorator() (utils.js),
  *          timer(), timerEnd() functions (utils.js),
@@ -67,16 +67,16 @@ Kobayashi.DEFAULT_TARGET = 'kobayashi-default-target';
 Kobayashi.LOADED_MEDIA = {};
 
 ( function($) { $(document).ready( function() {
-    
+
     // We need to remember what URL is loaded in which element,
     // so we can load or not load content appropriately on hash change.
     var LOADED_URLS = Kobayashi.LOADED_URLS = {};
-    
+
     // We also need to keep track of what's been loaded from a hashchange
     // to be able to distinguish what's affected by
     // no longer being mentioned in the hash.
     var URL_LOADED_BY_HASH = Kobayashi.URL_LOADED_BY_HASH = {};
-    
+
     // If the hash changes before all ajax requests complete,
     // we want to cancel the pending requests. MAX_REQUEST is actually the number
     // of the last hashchange event. Each ajax request then remembers the state
@@ -84,7 +84,7 @@ Kobayashi.LOADED_MEDIA = {};
     // finished, the results are discarded. It's OK to discard it because it
     // never gets into LOADED_URLS.
     var MAX_REQUEST = 0;
-    
+
     // When a sequence of URLs to load into various elements is given,
     // the requests are stored in this fifo and their results are
     // rendered into the document as they become ready, but always in order.
@@ -94,13 +94,13 @@ Kobayashi.LOADED_MEDIA = {};
     // fields in LOAD_BUF at position less than MIN_LOAD).
     // MAX_LOAD should pretty much always be LOAD_BUF.length - 1.
     var MIN_LOAD, MAX_LOAD = -1;
-    
+
     // When something is loaded into an element that has no base view (in urls.js),
     // and the user hits back, we need to reload. But then we don't want to reload again,
     // so keep information about whether we manipulated the content, so we can
     // abstain from reloading if we have not.
     var PAGE_CHANGED = 0;
-    
+
     function object_empty(o) {
         for (var k in o) return false;
         return true;
@@ -110,7 +110,7 @@ Kobayashi.LOADED_MEDIA = {};
         for (var k in o) rv.push(k);
         return rv;
     }
-    
+
     // Returns the closest parent that is a container for a dynamically loaded piece of content, along with some information about it.
     function closest_loaded(el) {
         while ( el && (!el.id || !LOADED_URLS[ el.id ]) ) {
@@ -120,7 +120,7 @@ Kobayashi.LOADED_MEDIA = {};
         return { container: el, id: el.id, url: LOADED_URLS[ el.id ], toString: function(){return this.id} };
     }
     Kobayashi.closest_loaded = closest_loaded;
-    
+
     function inject_content($target, data, address, extras) {
         // whatever was loaded inside, remove it from LOADED_URLS
         if (!object_empty(LOADED_URLS)) {
@@ -129,7 +129,7 @@ Kobayashi.LOADED_MEDIA = {};
                 delete LOADED_URLS[ this.id ];
             });
         }
-        
+
         var redirect_to;
         if (redirect_to = extras.xhr.getResponseHeader('Redirect-To')) {
             var arg = {};
@@ -172,7 +172,7 @@ Kobayashi.LOADED_MEDIA = {};
         PAGE_CHANGED++;
     }
     Kobayashi.inject_content = inject_content;
-    
+
     // argument is a LOAD_BUF item
     function inject_error_message(info) {
         if (!info) {
@@ -202,14 +202,14 @@ Kobayashi.LOADED_MEDIA = {};
                     + Math.max($target.height(), 300)
                     + '"></object>'
                 );
-                
+
                 function append_error_data() {
                     $obj.attr({ data:
                         'data:text/html;base64,'
                         + Base64.encode(response_text)
                     }).appendTo( $err_div );
                 }
-                
+
                 if (window.Base64) {
                     append_error_data();
                 }
@@ -225,7 +225,7 @@ Kobayashi.LOADED_MEDIA = {};
         $target.empty().append($err_div);
     }
     Kobayashi.inject_error_message = inject_error_message;
-    
+
     // get new index to LOAD_BUF (the request queue), either on its end (normal) or at the beginning (is_priority == true)
     function alloc_loadbuf(is_priority) {
         if (MIN_LOAD == undefined || MAX_LOAD+1 < MIN_LOAD) {
@@ -243,17 +243,17 @@ Kobayashi.LOADED_MEDIA = {};
             return ++MAX_LOAD;
         }
     }
-    
+
     // Check if the least present request has finished and if so, shift it
     // from the queue and render the results, and then call itself recursively.
     // This effectively renders all finished requests from the first up to the
     // first pending one, where it stops. If all requests are finished,
     // the queue gets cleaned and the indices reset.
     function draw_ready() {
-        
+
         // Slide up to the first defined request or to the end of the queue
         while (!LOAD_BUF[ MIN_LOAD ] && LOAD_BUF.length > MIN_LOAD+1) MIN_LOAD++;
-        
+
         // If the queue is empty, clean it
         if (!LOAD_BUF[ MIN_LOAD ]) {
 //            ;;; log_kobayashi.log("Emptying buffer");
@@ -263,9 +263,9 @@ Kobayashi.LOADED_MEDIA = {};
             return;
         }
         var info = LOAD_BUF[ MIN_LOAD ];
-        
+
         if (!info.data) return; // Not yet ready
-        
+
         delete LOAD_BUF[ MIN_LOAD ];
         while (LOAD_BUF.length > MIN_LOAD+1 && !LOAD_BUF[ ++MIN_LOAD ]) {}
         var $target = $('#'+info.target_id);
@@ -278,23 +278,23 @@ Kobayashi.LOADED_MEDIA = {};
             draw_ready();
             return;
         }
-        
+
         inject_content($target, info.data, info.address, info);
-        
+
         // Check next request
         draw_ready();
     }
-    
+
     // This removes a request from the queue
     function cancel_request( load_id ) {
         var info = LOAD_BUF[ load_id ];
         delete LOAD_BUF[ load_id ];
         $('#'+info.target_id).removeClass('loading');
         $(document).trigger('dec_loading');
-        
+
         log_kobayashi.log('Failed to load ',info.address,' into ',info.target_id);
     }
-    
+
     // Take a container and a URL. Give the container the "loading" class,
     // fetch the URL, push the request into the queue, and when it finishes,
     // check for requests ready to be loaded into the document.
@@ -306,9 +306,9 @@ Kobayashi.LOADED_MEDIA = {};
             return;
         }
         ;;; log_kobayashi.log('loading ',address,' into #',target_id);
-        
+
         delete arg.xhr; // just in case there was one
-            
+
         // An empty address means we should revert to the base state.
         // If one is not set up for the given container, reload the whole page.
         if (address.length == 0) {
@@ -319,10 +319,10 @@ Kobayashi.LOADED_MEDIA = {};
                 return;
             }
         }
-        
+
         $('#'+target_id).addClass('loading');
         $(document).trigger('show_loading');
-        
+
         var url = prepend_base_path_to(address);
         url = $('<a>').attr('href', url).get(0).href;
         var load_id = alloc_loadbuf(arg.is_priority_request);
@@ -377,7 +377,7 @@ Kobayashi.LOADED_MEDIA = {};
         });
     }
     Kobayashi.load_content = load_content;
-    
+
     function reload_content(container_id) {
         var addr = LOADED_URLS[ container_id ] || '';
         load_content({
@@ -386,7 +386,7 @@ Kobayashi.LOADED_MEDIA = {};
         });
     }
     Kobayashi.reload_content = reload_content;
-    
+
     function unload_content(container_id, options) {
         if (!options) options = {};
         delete LOADED_URLS[ container_id ];
@@ -397,7 +397,7 @@ Kobayashi.LOADED_MEDIA = {};
         }
     }
     Kobayashi.unload_content = unload_content;
-    
+
     // We want location.hash to exactly describe what's on the page.
     // #url means that the result of $.get(url) be loaded into the default target div.
     // #id::url means that the result of $.get(url) be loaded into the #id element.
@@ -408,7 +408,7 @@ Kobayashi.LOADED_MEDIA = {};
     function load_by_hash() {
         var hash = location.hash.substr(1);
 //        ;;; log_kobayashi.log('load #'+MAX_REQUEST+'; hash: '+hash)
-        
+
         // Figure out what should be reloaded and what not by comparing the requested things with the loaded ones.
         var requested = {};
         var specifiers = hash.split('#');
@@ -422,7 +422,7 @@ Kobayashi.LOADED_MEDIA = {};
                 target_id = RegExp.$1;
                 address = RegExp.$2;
             }
-            
+
             requested[ target_id ] = address;
             ids_map[ target_id ] = 1;
             ids_arr.push(target_id);
@@ -448,7 +448,7 @@ Kobayashi.LOADED_MEDIA = {};
         var processed = {};
         var reload_target = {};
         while (!object_empty(ids_map)) {
-            
+
             // draw an element that's independent on any other in the list
             var ids = [];
             for (var id in ids_map) ids.push(id);
@@ -474,7 +474,7 @@ Kobayashi.LOADED_MEDIA = {};
                 log_kobayashi.log(ids_map);
                 throw('Cyclic graph of elements???');
             }
-            
+
             var result = {};
             for (var par in processed) {
                 // if we went over an ancestor of this element
@@ -495,7 +495,7 @@ Kobayashi.LOADED_MEDIA = {};
                     }
                 }
             }
-            
+
             // If parent didn't force reload or delete,
             if (result.to_reload == undefined) {
                 // and the thing is no longer requested and we don't have the base loaded,
@@ -511,7 +511,7 @@ Kobayashi.LOADED_MEDIA = {};
                     }
                 }
             }
-            
+
             if (result.to_reload == undefined) {
                 // If the requested url changed,
                 if (requested[ indep ] != LOADED_URLS[ indep ]) {
@@ -519,30 +519,30 @@ Kobayashi.LOADED_MEDIA = {};
                     result.to_reload = 1;
                 }
             }
-            
+
             // If we want to reload but no URL is set, default to the base
             if (result.to_reload && !requested[ indep ]) {
                 requested[ indep ] = '';
             }
-            
+
             processed[ indep ] = result;
         }
         // Now we figured out what to reload:
         // The things that are in requested AND that have processed[ $_ ].to_reload set to a true value
-        
+
         for (var target_id in requested) {
             if (!processed[ target_id ].to_reload) {
                 continue;
             }
             var address = requested[ target_id ];
-            
+
             // A specially treated specifier. The callback should set up LOADED_URLS properly.
             // FIXME: Rewrite
             if (URLS[address]) {
                 URLS[address](target_id);
                 continue;
             }
-           
+
             load_content({
                 target_id: target_id,
                 address: address,
@@ -550,7 +550,7 @@ Kobayashi.LOADED_MEDIA = {};
             });
         }
     }
-    
+
     // Fire hashchange event when location.hash changes
     window.CURRENT_HASH = '';
     $(document).bind('hashchange', function() {
@@ -572,7 +572,7 @@ Kobayashi.LOADED_MEDIA = {};
     }
     setTimeout(watch_location, KOBAYASHI_ADDRESSBAR_CHECK_INTERVAL);
     // End of hash-driven content management
-    
+
     // Loads stuff from an URL to an element like load_by_hash but:
     // - Only one specifier (id-url pair) can be given.
     // - URL hash doesn't change.
@@ -595,20 +595,20 @@ Kobayashi.LOADED_MEDIA = {};
         else {
             target_id = specifier.substr(0, colon_index);
         }
-        
+
         var address = get_hashadr(specifier, {not_correct_get_parameters: false});
-        
+
         if (LOADED_URLS[target_id] == address) {
             $('#'+target_id).slideUp('fast');
             unload_content(target_id);
             return null;
         }
-        
+
         return {target_id:target_id, address:address};
     }
     Kobayashi.get_simple_load_arguments = get_simple_load_arguments;
 
-    // Returns object containing HTTP GET parameters 
+    // Returns object containing HTTP GET parameters
     function split_get_arguments(url) {
         var out = new Object();
         var qmark_position = url.indexOf('?');
@@ -620,7 +620,7 @@ Kobayashi.LOADED_MEDIA = {};
             get_parameters = url;
         }
         var assignments = get_parameters.split(/&/);
-        
+
         for (var i = 0; i < assignments.length; i++) {
             var ass = assignments[i];
             var param = (ass.indexOf('=') < 0) ? ass : ass.substr(0, ass.indexOf('='));
@@ -633,7 +633,7 @@ Kobayashi.LOADED_MEDIA = {};
         return out;
     }
     Kobayashi.split_get_arguments = split_get_arguments;
-    
+
     // Set up event handlers
     $('.js-simpleload,.js-simpleload-container a').live('click', function(evt) {
         if (evt.button != 0) return true;    // just interested in left button
@@ -656,24 +656,24 @@ Kobayashi.LOADED_MEDIA = {};
 
 
 // Manipulate the hash address.
-// 
+//
 // We use http://admin/#/foo/ instead of http://admin/foo/.
 // Therefore, <a href="bar/"> won't lead to http://admin/#/foo/bar/ as we need but to http://admin/bar/.
 // To compensate for this, use <a href="javascript:adr('bar/')> instead.
 // adr('id::bar/') can be used too.
-// 
+//
 // adr('bar/#id::baz/') is the same as adr('bar/'); adr('id::baz/').
 // Absolute paths and ?var=val strings work too.
-// 
+//
 // Alternatively, you can use <a href="bar/" class="js-hashadr">.
 // The js-hashadr class says clicks should be captured and delegated to function adr.
 // A third way is to encapsulate a link (<a>) into a .js-hashadr-container element.
-// 
+//
 // The target_id::rel_base::address syntax in a specifier means that address is taken as relative
 // to the one loaded to rel_base and the result is loaded into target_id.
 // For example, suppose that location.hash == '#id1::/foo/'. Then calling
 // adr('id2::id1::bar/') would be like doing location.hash = '#id1::/foo/#id2::/foo/bar/'.
-// 
+//
 // The second argument is an object where these fields are recognized:
 // - hash: a custom hash string to be used instead of location.hash,
 // - just_get: 'address' Instructs the function to merely return the modified address (without the target_id).
@@ -695,7 +695,7 @@ function adr(address, options) {
         log_kobayashi.log('No address given to adr()');
         return;
     }
-    
+
     function set_location_hash(newhash, options) {
         if (newhash.charAt(0) != '#') newhash = '#' + newhash;
         if (options.nohistory) {
@@ -708,17 +708,17 @@ function adr(address, options) {
             CURRENT_HASH = location.hash;
         }
     }
-    
+
     // '#' chars in the address separate invividual requests for hash modification.
     // First deal with the first one and then recurse on the subsequent ones.
     if (address.charAt(0) == '#') address = address.substr(1);
     var hashpos = (address+'#').indexOf('#');
     var tail = address.substr(hashpos+1);
     address = address.substr(0, hashpos);
-    
+
     if (!options) options = {};
     var hash = (options.hash == undefined) ? location.hash : options.hash;
-    
+
     // Save the original address into the related event(s)
     var related_events = $.makeArray(options.evt);
     var original_address;
@@ -726,7 +726,7 @@ function adr(address, options) {
         if (original_address === undefined) original_address = get_hashadr('');
         related_events[i].referer = original_address;
     }
-    
+
     // Figure out which specifier is concerned.
     var target_id = '';
     // But wait, if target_id::rel_base::address was specified,
@@ -746,7 +746,7 @@ function adr(address, options) {
         target_id = reg_res[1];
         address   = reg_res[2];
     }
-    
+
     // If no hash is present, simply use the address.
     if (hash.length <= 1) {
         var newhash;
@@ -763,7 +763,7 @@ function adr(address, options) {
             return;
         }
     }
-    
+
     // In case we're modifying a target that has something loaded
     // in it which is not in the hash, correct it first
     if (!options._hash_preproc) {
@@ -773,7 +773,7 @@ function adr(address, options) {
             hash = get_hash(target_id+'::'+acc2record, {_hash_preproc:true});
         }
     }
-    
+
     // Figure out the span in the current hash where the change applies.
     var start = 0;
     var end;
@@ -804,19 +804,19 @@ function adr(address, options) {
         }
     }
     // Now, hash.substring(start,end) is the address we need to modify.
-    
+
     // Figure out whether we replace the address, append to it, or what.
     // Move start appropriately to denote where the part to replace starts.
-    
+
     var newhash;
     var addr_start = start;
     var old_address = hash.substring(start,end);
-    
+
     // We've not gotten the address from a previous recursive call, thus modify the address as needed.
     if (new_address == undefined) {
         log_kobayashi.log('address:', address);
         new_address = address;
-        
+
         // empty address -- remove the specifier
         if (address.length == 0) {
             // but in case of just_get:address, return the original address for the container (relative "")
@@ -862,7 +862,7 @@ function adr(address, options) {
         else {
             var left_anchor = hash.lastIndexOf('#', start)+1;
             start = (hash.substr(0, end)+'?').indexOf('?', start);
-            
+
             // cut off the directories as appropriate when the address starts with ../
             while (new_address.substr(0,3) == '../' && hash.substring(left_anchor,start-1).indexOf('/') >= 0) {
                 new_address = new_address.substr(3);
@@ -870,9 +870,9 @@ function adr(address, options) {
             }
         }
     }
-    
+
     newhash = hash.substr(0, start) + specifier_prefix + new_address + hash.substr(end);
-    
+
     if (options.just_get == 'address') {
         return hash.substring(addr_start, start) + new_address;
     }
@@ -897,7 +897,7 @@ function get_adr(address, options) {
     var hashadr = get_hashadr(address, options);
 //    if (hashadr.charAt(0) != '/') hashadr = get_hashadr(hashadr);
     return prepend_base_path_to(hashadr);
-        
+
 }
 // returns the hash instead of assigning it to location
 function get_hash(address, options) {
@@ -909,36 +909,36 @@ function get_hash(address, options) {
 
 // Dynamic media (CSS, JS) loading
 (function() {
-    
+
     // Get an URL to a CSS or JS file, attempt to load it into the document and call callback on success.
     function load_media(url, callbacks) {
         if (!url) {
             log_kobayashi.log('Error: No URL given to Kobayashi.load_media');
             return;
         }
-        
+
         var succ_fn = callbacks.succ_fn;
         var err_fn  = callbacks.err_fn;
         var next_fn = callbacks.next_fn;
-        
+
         if (Kobayashi.LOADED_MEDIA[ url ]) {
             if ($.isFunction(succ_fn)) succ_fn(url);
             if ($.isFunction(next_fn)) next_fn(url);
             ;;; log_kobayashi.log('Skipping loaded medium: ', url);
             return true;
         }
-        
+
         ;;; log_kobayashi.log('loading medium ',url);
-        
+
         /(?:.*\/\/[^\/]*)?([^?]+)(?:\?.*)?/.exec(url);
         $(document).data('loaded_media')[ RegExp.$1 ] = url;
-        
+
         if (/\.(\w+)(?:$|\?)/.exec(url))
             var ext = RegExp.$1;
         else throw('Unexpected URL format: '+url);
-        
+
         var abs_url = $('<a>').attr({href:url}).get(0).href;
-        
+
         function stylesheet_present(url) {
             for (var i = 0; i < document.styleSheets.length; i++) {
                 if (document.styleSheets[i].href == url) return document.styleSheets[i];
@@ -953,7 +953,7 @@ function get_hash(address, options) {
             log_kobayashi.log('Could not get rules from: ', stylesheet);
             return;
         }
-        
+
         if (ext == 'css') {
             if (stylesheet_present(abs_url)) {
                 if ($.isFunction(succ_fn)) succ_fn(url);
@@ -962,7 +962,7 @@ function get_hash(address, options) {
                 return true;
             }
             var tries = KOBAYASHI_CSS_LOAD_TRIES;
-            
+
             setTimeout(function() {
                 if (--tries < 0) {
                     Kobayashi.LOADED_MEDIA[ url ] = false;
@@ -977,7 +977,7 @@ function get_hash(address, options) {
                         Kobayashi.LOADED_MEDIA[ url ] = true;
                         if ($.isFunction(succ_fn)) succ_fn(url);
                         ;;; log_kobayashi.log('CSS Successfully loaded: ',url);
-                        
+
                     }
                     else {
                         Kobayashi.LOADED_MEDIA[ url ] = false;
@@ -988,7 +988,7 @@ function get_hash(address, options) {
                 }
                 else setTimeout(arguments.callee, KOBAYASHI_CSS_LOAD_TIMEOUT);
             }, KOBAYASHI_CSS_LOAD_TIMEOUT);
-            
+
             var $csslink = $('<link rel="stylesheet" type="text/css" href="'+url+'" />').appendTo($('head'));
             if ($.isFunction(next_fn)) next_fn(url);
             return $csslink;
@@ -1025,8 +1025,8 @@ function get_hash(address, options) {
         else throw('Unrecognized media type "'+ext+'" in URL: '+url);
     }
     Kobayashi.load_media = load_media;
-    
-    
+
+
     var media_queue = [];
     $(document).data('loaded_media', {});
     function init_media() {
@@ -1046,7 +1046,7 @@ function get_hash(address, options) {
         var url = media_queue.shift();
         Kobayashi.load_media(url, {next_fn: draw_media});
     }
-    
+
     // Load a CSS / JavaScript file (given an URL) after previously requested ones have been loaded / failed loading.
     function request_media(url) {
         if (!url) {
@@ -1062,5 +1062,5 @@ function get_hash(address, options) {
         }
     }
     window.request_media = request_media;
-    
+
 })();
