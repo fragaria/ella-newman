@@ -80,11 +80,11 @@ FAVORITE_ITEMS = (
     'core.publishable',
     'articles.article',
     'photos.photo',
-    'galleries.gallery',
-    'polls.survey',
-    'polls.quiz',
-    'polls.contest',
-    'interviews.interview',
+    'ella_galleries.gallery',
+    'ella_polls.survey',
+    'ella_polls.quiz',
+    'ella_polls.contest',
+    'ella_interviews.interview',
     'positions.position',
 )
 
