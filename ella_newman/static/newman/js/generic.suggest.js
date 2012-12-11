@@ -1,6 +1,6 @@
-/** 
+/**
  * Generic Suggester library.
- * requires: jQuery 1.4.2+, 
+ * requires: jQuery 1.4.2+,
  *          str_concat() function (effective string concatenation).
  *
  * provides:
@@ -73,9 +73,9 @@ GenericSuggestLib = {};
 
     var $ins;
     function initialize() {
-        
+
         GenericSuggestLib.NO_TRIGGER_CHANGE = true;
-        
+
         if ( $(SUGGEST_SELECTOR).length == 0 ) return;
         $(SUGGEST_SELECTOR)
             .unbind('click', set_current_input).bind('click', set_current_input)
@@ -221,7 +221,7 @@ GenericSuggestLib = {};
                 suggest_update( $(this) );
             }
         });
-        
+
         delete GenericSuggestLib.NO_TRIGGER_CHANGE;
     }
     initialize();
@@ -370,7 +370,7 @@ GenericSuggestLib = {};
         }
         $input.data('offset', offset);
 
-        $.get(sug_url+val, {}, function(sug_result) {
+        $.get(sug_url+encodeURIComponent(val), {}, function(sug_result) {
             if (sug_result == 'SPECIAL: OFFSET OUT OF RANGE') {
                 if (offset > 0) suggest_update($input, 0);
                 else hide_bubbles();
@@ -612,7 +612,7 @@ GenericSuggestLib = {};
         $w.data('input').removeClass('pod-lupickou');
         $w.remove();
     }
-    
+
     GenericSuggestLib.copy = function(from, to) {
         var $from = get_current_inputs(from);
         var $to   = get_current_inputs(to);
@@ -621,14 +621,14 @@ GenericSuggestLib = {};
         );
         restore_suggest_widget_from_value(to);
     };
-    
+
     GenericSuggestLib.get_value = function(el) {
         var $inputs = get_current_inputs(el);
         var val = $inputs.hidden.val().replace(/#.*/, '');
         if ($inputs.ul.is('.GenericSuggestField')) return val;
         else return val.split(/,/);
     };
-    
+
     function equidistant_array_coverage(count, characters) {
         if (characters == null)
             characters = 'abcčdefghijklmnoprřsštuvzž'.split('');
