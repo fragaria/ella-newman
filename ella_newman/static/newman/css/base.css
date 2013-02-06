@@ -494,11 +494,36 @@ span.widget-thumb img { border: 1px solid #ccc; margin-right: 5px; }
     margin: 5px;
     padding: 5px;
     border: 1px solid #ddd;
-    overflow: auto;
+    overflow: hidden;
     float: left;
     max-width: 180px;
-    max-height: 220px;
-    background: #77B150;
+    min-height: 250px;
+    max-height: 250px;
+    background: #eee;
+}
+.gallery-item .widget-thumb, .gallery-item .vForeignKeyRawIdAdminField {
+    float: left;
+}
+.gallery-item .vForeignKeyRawIdAdminField {
+    width: 80px;
+    margin-bottom: 1em;
+}
+.gallery-item .js-hashadr {
+    display: block;
+    clear: both;
+    margin: 1em 0;
+}
+.gallery-item .vTextField {
+    clear: both;
+    margin-bottom: 10px;
+}
+.gallery-item textarea {
+    width: 95%;
+    min-width: inherit;
+    height: 50px;
+}
+.gallery-item .delete {
+    margin-top: 10px;
 }
 .gallery-item img.thumb { float: left; width: 80px; margin-right: 10px; }
 .gallery-item-error { background: #f66262 !important; }

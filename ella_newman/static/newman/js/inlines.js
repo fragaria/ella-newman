@@ -1,6 +1,6 @@
-/** 
+/**
  * Newman inlines.
- * requires: jQuery 1.4.2+, 
+ * requires: jQuery 1.4.2+,
  *          gettext() function.
  *          carp(),
  *          str_concat(),
@@ -57,12 +57,12 @@ var __NewmanInline = function() {
                 log_inline.log('Error occured during handle_form() call.', e);
             }
             var form = $('.change-form');
-            form.bind( 
-                'preset_load_initiated.' + handler.name, 
-                this_decorator(handler, handler.preset_load_initiated) 
+            form.bind(
+                'preset_load_initiated.' + handler.name,
+                this_decorator(handler, handler.preset_load_initiated)
             );
-            form.bind( 
-                'preset_load_completed.' + handler.name, 
+            form.bind(
+                'preset_load_completed.' + handler.name,
                 this_decorator(handler, handler.preset_load_completed)
             );
         }
@@ -118,7 +118,7 @@ var __FormHandler = function () {
 var FormHandler = to_class(__FormHandler);
 
 (function($) {
-    
+
     function add_inline($template, no) {
         $template.before(
             $template.html()
@@ -170,7 +170,7 @@ var FormHandler = to_class(__FormHandler);
         add_inline($template, no);
     }
     $('.add-choice-button').live('click', add_choice);
-    
+
     // create desired inputs for loaded preset
     function add_listings_for_preset(evt, preset) {
         var $form = $( evt.target );
@@ -200,16 +200,16 @@ var FormHandler = to_class(__FormHandler);
         .unbind('preset_load_initiated.listing')
         .bind('preset_load_initiated.listing', add_listings_for_preset);
     });
-    
+
     // main category button
     $('.js-placement-main-category').live('click', function(evt) {
         if ($('#id_category').val().length <= 1) return;
-        
+
         var      main_category_input = $('#id_category_suggest'                ).get(0);
         var placement_category_input = $('#id_placement_set-0-category_suggest').get(0);
-        
+
         GenericSuggestLib.copy(main_category_input, placement_category_input);
-        
+
         if ($('.listing-row').length == 0) {
             add_listing();
             var listing_category_input = $('#id_category_1_suggest').get(0);
@@ -243,7 +243,7 @@ var FormHandler = to_class(__FormHandler);
     $('.change-form').bind('preset_load_completed', remove_ellacomments_ids);
     //log_inline.log('remove_ellacomments_ids bind');
 
-    
+
 })(jQuery);
 
 // Gallery inlines
@@ -293,7 +293,7 @@ var __GalleryFormHandler = function () {
         var rv = true;
         var ITEM_ERROR_CLASS = 'gallery-item-error';
 
-        $form.find('.gallery-item .target_id').each( function() {
+        $form.find('.gallery-item .vForeignKeyRawIdAdminField').each( function() {
             if (rv == false) return;
             var val = $(this).val();
             if (val == '') return;
@@ -324,7 +324,7 @@ var __GalleryFormHandler = function () {
         if (rv) {
             var $filter = $('.gallery-items-sortable .inline-related').filter(
                 function() {
-                    var $res = $(this).find('input.target_id');
+                    var $res = $(this).find('input.vForeignKeyRawIdAdminField');
                     var res = $res.val();
                     return res == '';
                 }
@@ -337,14 +337,14 @@ var __GalleryFormHandler = function () {
         }
 
         this.disable_gallery_target_id();
-        
+
         return rv;
     };
 
     // make target_id fields not editable
     this.disable_gallery_target_id = function () {
         function disable_field() {
-            var $target_field = $(this).find('input.target_id');
+            var $target_field = $(this).find('input.vForeignKeyRawIdAdminField');
             //$target_field.attr('disabled', true); // doesn't worked out
             $target_field.hide();
         }
@@ -353,14 +353,14 @@ var __GalleryFormHandler = function () {
             disable_field
         );
     };
-    
+
     // update the preview thumbs and headings
     this.update_gallery_item_thumbnail = function ($input) {
         // Note context this inside this scope would be set by jQuery.
         //var $input = $(this);
         var me = this;
         var id = $input.val();
-        
+
         var $img     = $input.siblings('img:first');
         var $heading = $input.siblings('h4:first');
         if ($heading.length == 0) {
@@ -371,13 +371,13 @@ var __GalleryFormHandler = function () {
             alt: ''
         });
         $heading.find('span').empty();
-       
+
         // remove items with deleted id
         if (!id) {
             $heading.remove();
             return;
         }
-        
+
         $.ajax({
             url: str_concat(BASE_PATH , '/photos/photo/' , id , '/thumb/'),
             success: function(response_text) {
@@ -386,7 +386,7 @@ var __GalleryFormHandler = function () {
                 catch(e) {
                     log_inline.log('thumb update error: successful response container unexpected text: ' , response_text);
                 }
-                
+
                 // thumbnail
                 var thumb_url = res.data.thumb_url;
                 var title     = res.data.title;
@@ -394,7 +394,7 @@ var __GalleryFormHandler = function () {
                     src: thumb_url,
                     alt: title
                 });
-                
+
                 // heading
                 var order = $( '#' + $input.attr('id').replace(/-target_id$/, '-order') ).val();
                 //$heading.find('span:first').text( order ); // don't show ordering value
@@ -406,7 +406,7 @@ var __GalleryFormHandler = function () {
                     $del.removeClass('noscreen');
                 }
                 me.gallery_inlines_recount_ids();
-            },
+            }
         });
     };
 
@@ -442,12 +442,12 @@ var __GalleryFormHandler = function () {
 
     this.gallery_inlines_recount_ids = function () {
         var $items = $('.gallery-items-sortable .inline-related');
-        var no_items = $('.gallery-items-sortable input.target_id').length;
+        var no_items = $('.gallery-items-sortable input.vForeignKeyRawIdAdminField').length;
         var counter = 0;
         var me = this;
         $items.each(
             function() {
-                $(this).find('*').each( 
+                $(this).find('*').each(
                     function() {
                         me.gallery_recount_ids_and_names_callback(this, counter);
                     }
@@ -456,7 +456,7 @@ var __GalleryFormHandler = function () {
             }
         );
     };
-    
+
     this.add_inline_item = function (evt) {
         if (evt && evt.button != 0) return;
         var me = this;
@@ -465,9 +465,9 @@ var __GalleryFormHandler = function () {
         }
         var $last_item = $('.gallery-items-sortable .inline-related:last');
         var $new_item = $last_item.clone(true);
-        var no_items = $('.gallery-items-sortable input.target_id').length;
+        var no_items = $('.gallery-items-sortable input.vForeignKeyRawIdAdminField').length;
         $last_item.removeClass('last-related');
-        
+
         var no_re = /galleryitem_set-\d+-/;
         $new_item.find('*').each( function() {
             var ITEM_SET = 'galleryitem_set-';
@@ -488,9 +488,9 @@ var __GalleryFormHandler = function () {
                 var newid = $this.attr('for').replace(no_re, str_concat(ITEM_SET,no_items,'-') );
                 $this.attr('for', newid);
             }
-           
+
             // init values
-            if ($this.is('.target_id' )) $(this).val('');
+            if ($this.is('.photo_id' )) $(this).val('');
             if ($this.is('img.thumb'  )) $(this).attr({src:'', alt:''});
             if ($this.is('.item-order')) {
                 // count order
@@ -596,7 +596,7 @@ var __GalleryFormHandler = function () {
         if ($sortables.length == 0) return;
         $sortables.children().filter(
             function() {
-                var $target_id = $(this).find('input.target_id');
+                var $target_id = $(this).find('input.vForeignKeyRawIdAdminField');
                 return $target_id.length != 0;
             }
         ).addClass('sortable-item');
@@ -611,44 +611,31 @@ var __GalleryFormHandler = function () {
         });
         // recount before save
         NewmanLib.register_pre_submit_callback(me.gallery_ordering_recount);
-        
+
         // make sure only the inputs with a selected photo are sortable
-        $(root).find('input.target_id').change( function() {
+        $(root).find('input.vForeignKeyRawIdAdminField').change( function() {
             if ($(this).val()) {
                 $(this).closest('.inline-related').addClass('sortable-item');
             }
         });
-        
+
         // initialize order for empty listing
         var degree = 0;
         $sortables.find('.item-order').each( function() {
             if (degree === 0) {
                 degree = me.get_gallery_ordering_degree( $(this) );
             }
-            if ( ! $(this).val() ) $(this).val( 
-                (me.max_order() + 1) * degree 
+            if ( ! $(this).val() ) $(this).val(
+                (me.max_order() + 1) * degree
             );
         });
         function wrap_update_gallery_item_thumbnail() {
             me.update_gallery_item_thumbnail($(this));
         }
-        $(root).find('input.target_id').not('.js-updates-thumb').addClass('js-updates-thumb').change( 
+        $(root).find('input.vForeignKeyRawIdAdminField').not('.js-updates-thumb').addClass('js-updates-thumb').change(
             wrap_update_gallery_item_thumbnail
         );
-        
-        // add a new empty gallery item
-        $(root).find('input.target_id').not('.js-adds-empty').addClass('js-adds-empty').change( function() {
-            if (
-                $('.gallery-item input.target_id').filter( 
-                function() {
-                    return ! $(this).val(); 
-                } 
-                ).length == 0
-            ) {
-                me.add_inline_item();
-            }
-        });
-        
+
         $('#gallery_form').bind('preset_load_initiated.gallery', function(evt, preset) {
         });
         $('#gallery_form').bind('preset_load_completed', function(evt) {
@@ -667,7 +654,7 @@ var __GalleryFormHandler = function () {
     // called when preset is being loaded into the form
     this.preset_load_initiated = function (evt, preset) {
         log_inline.log('Preset load initiated for ', this.name);
-        // create desired input rows for loaded preset 
+        // create desired input rows for loaded preset
         var desired_no;
         for (var i = 0; i < preset.data.length; i++) {
             var o = preset.data[i];
@@ -675,7 +662,7 @@ var __GalleryFormHandler = function () {
                 desired_no = new Number( o.value );
             }
         }
-        var no_items = $('.gallery-items-sortable input.target_id').length;
+        var no_items = $('.gallery-items-sortable input.vForeignKeyRawIdAdminField').length;
         // add gallery items if necessary
         for (var i = no_items; i < desired_no; i++) {
             this.add_inline_item();
@@ -686,7 +673,7 @@ var __GalleryFormHandler = function () {
         }
         // reset the fields
         var $rows = $('.gallery-items-sortable .inline-related');
-        $rows.find('input.target_id,input.item-order').val('');
+        $rows.find('input.vForeignKeyRawIdAdminField,input.item-order').val('');
         $rows.find('img.thumb').attr({src:'', alt:''});
         $rows.find('h4').remove();
         log_inline.log('Preset load init done for ', this.name);
@@ -699,8 +686,8 @@ var __GalleryFormHandler = function () {
         function each_callback() {
             me.update_gallery_item_thumbnail($(this));
         }
-        $('.gallery-items-sortable input.target_id').each( 
-           each_callback 
+        $('.gallery-items-sortable input.vForeignKeyRawIdAdminField').each(
+           each_callback
         );
         this.do_gallery( evt.target );
         this.remove_gallery_item_ids();
@@ -711,8 +698,8 @@ var __GalleryFormHandler = function () {
     this.restore_gallery_items = function(data, $form) {
         if (!$form) $form = $(document);
         var inputs_container_selector = '.gallery-items-sortable';
-        var last_input_selector = ':input.target_id:last';
-        
+        var last_input_selector = ':input.vForeignKeyRawIdAdminField:last';
+
         var $input = $form.find(inputs_container_selector + ' ' + last_input_selector);
         if ($input.length == 0) {
             log_inline.log('No gallery item input found; not restoring gallery items');
@@ -745,7 +732,7 @@ var __TagFormHandler = function() {
     };
 
     this.is_suitable = function (document_dom_element, $document) {
-        // TagFormHandler handles input elements 
+        // TagFormHandler handles input elements
         // named 'tagging-taggeditem-content_type-object_id-0-id' .
         var found = $document.find('input[name=tagging-taggeditem-content_type-object_id-0-id]');
         return found.length != 0;
@@ -869,7 +856,7 @@ var __ExportMetaFormHandler = function() {
         var $field = this.$exportmeta_inline.find('.GenericSuggestField').siblings('.vForeignKeyRawIdAdminField');
         $field.bind('change', this_decorator(this, this.suggest_changed_handler) );
         $fieldset.find('a.js-export-show-additional-fields').live(
-            'click', 
+            'click',
             this_decorator(this, this.show_additional_fields_handler)
         );
     };
