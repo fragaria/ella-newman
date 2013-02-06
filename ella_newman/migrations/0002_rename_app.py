@@ -14,7 +14,7 @@ TABLES = (
 )
 
 class Migration:
-    
+
     def forwards(self, orm):
 
         # rename old newman tables
@@ -22,24 +22,24 @@ class Migration:
             db.rename_table(table, 'ella_%s' % table)
 
         # rename app in contenttypes table
-        orm['contenttypes.Contentype'].objects.filter(app_label='newman').update(app_label='ella_newman')
+        orm['contenttypes.ContentType'].objects.filter(app_label='newman').update(app_label='ella_newman')
 
         # db.delete_unique('newman_adminsetting', ['user_id', 'var'])
         # db.delete_unique('newman_devmessage', ['slug', 'ts'])
         # db.delete_unique('newman_denormalizedcategoryuserrole', ['user_id', 'permission_codename', 'permission_id', 'category_id', 'contenttype_id'])
         # db.delete_unique('newman_adminsetting', ['group_id', 'var'])
         # db.delete_unique('newman_adminhelpitem', ['ct_id', 'field', 'lang'])
-        
-        
-    
-    
+
+
+
+
     def backwards(self, orm):
         for table in TABLES:
             db.rename_table('ella_%s' % table, table)
         # rename app in contenttypes table
-        orm['contenttypes.Contentype'].objects.filter(app_label='ella_newman').update(app_label='newman')
-    
-    
+        orm['contenttypes.ContentType'].objects.filter(app_label='ella_newman').update(app_label='newman')
+
+
     models = {
         'core.category': {
             'Meta': {'unique_together': "(('site','tree_path'),)", 'app_label': "'core'"},
@@ -88,7 +88,7 @@ class Migration:
             '_stub': True,
             'id': ('models.AutoField', [], {'primary_key': 'True'})
         },
-        'contenttypes.contenttype': {
+        'contenttypes.ContentType': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label','model'),)", 'db_table': "'django_content_type'"},
             '_stub': True,
             'id': ('models.AutoField', [], {'primary_key': 'True'})
@@ -113,5 +113,5 @@ class Migration:
             'user': ('models.ForeignKey', ["orm['auth.User']"], {})
         }
     }
-    
+
     complete_apps = ['ella_newman']
