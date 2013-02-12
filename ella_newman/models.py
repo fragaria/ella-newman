@@ -146,7 +146,7 @@ class CategoryUserRole(models.Model):
             #print 'Denormalizing %s for %d categories' % (code, len(cats))
             # create denormalized roles
             for c in cats:
-                root_cat = c.main_parent
+                root_cat = c.tree_parent
                 if not root_cat:
                     root_cat = c #c is top category
                 elif root_cat.tree_parent_id:
