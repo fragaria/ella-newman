@@ -150,7 +150,7 @@ class CategoryUserRole(models.Model):
                 if not root_cat:
                     root_cat = c #c is top category
                 elif root_cat.tree_parent_id:
-                    root_cat = root_cat.get_tree_parent()
+                    root_cat = root_cat.tree_parent
                 try:
                     obj = DenormalizedCategoryUserRole.objects.create(
                         contenttype_id=p.content_type.pk,
