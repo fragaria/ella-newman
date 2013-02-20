@@ -613,7 +613,7 @@ var __GalleryFormHandler = function () {
         NewmanLib.register_pre_submit_callback(me.gallery_ordering_recount);
 
         // make sure only the inputs with a selected photo are sortable
-        $(root).find('input.vForeignKeyRawIdAdminField').change( function() {
+        $(root).find('.gallery-items-sortable input.vForeignKeyRawIdAdminField').change( function() {
             if ($(this).val()) {
                 $(this).closest('.inline-related').addClass('sortable-item');
             }
