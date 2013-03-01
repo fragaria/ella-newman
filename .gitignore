@@ -12,3 +12,4 @@ test_newman/cover
 .pydevproject
 .settings
 .coverage
+.idea

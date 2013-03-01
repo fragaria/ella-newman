@@ -1,0 +1,11 @@
+{% extends "newman/edit_inline/tabular.html" %}
+
+{% block header_fields %}
+    {% if not field.is_listing_custom_field %}
+    {{ block.super }}
+    {% endif %}
+{% endblock %}
+
+{% block tabular_quick_sel %}
+<p><a class="icn btn addfav js-placement-main-category">Výchozí publikace</a></p>
+{% endblock %}

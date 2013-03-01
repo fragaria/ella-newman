@@ -206,15 +206,17 @@ var FormHandler = to_class(__FormHandler);
         if ($('#id_category').val().length <= 1) return;
 
         var      main_category_input = $('#id_category_suggest'                ).get(0);
-        var placement_category_input = $('#id_placement_set-0-category_suggest').get(0);
+        var placement_category_input = $('#id_listing_set-0-category_suggest').get(0);
 
         GenericSuggestLib.copy(main_category_input, placement_category_input);
 
-        if ($('.listing-row').length == 0) {
-            add_listing();
-            var listing_category_input = $('#id_category_1_suggest').get(0);
-            GenericSuggestLib.copy(main_category_input, listing_category_input);
-        }
+        var main_publish_from = $('#id_publish_from');
+        var listing_publish_from = $('#id_listing_set-0-publish_from');
+        listing_publish_from.val(main_publish_from.val());
+
+        var main_publish_to = $('#id_publish_to');
+        var listing_publish_to = $('#id_listing_set-0-publish_to');
+        listing_publish_to.val(main_publish_to.val());
     });
     function init_main_category_button() {
         function _() {
