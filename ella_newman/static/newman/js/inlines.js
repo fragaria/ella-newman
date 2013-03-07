@@ -205,31 +205,30 @@ var FormHandler = to_class(__FormHandler);
     $('.js-placement-main-category').live('click', function(evt) {
         if ($('#id_category').val().length <= 1) return;
 
-        var      main_category_input = $('#id_category_suggest'                ).get(0);
+        var      main_category_input = $('#id_category_suggest').get(0);
         var placement_category_input = $('#id_listing_set-0-category_suggest').get(0);
 
         GenericSuggestLib.copy(main_category_input, placement_category_input);
 
-        var main_publish_from = $('#id_publish_from');
-        var listing_publish_from = $('#id_listing_set-0-publish_from');
-        listing_publish_from.val(main_publish_from.val());
+        var main_publish_from = $('#id_publish_from').val();
+        var main_publish_to = $('#id_publish_to').val();
+        var possible_rows = $(placement_category_input).closest('table').find('tr');
 
-        var main_publish_to = $('#id_publish_to');
-        var listing_publish_to = $('#id_listing_set-0-publish_to');
-        listing_publish_to.val(main_publish_to.val());
-    });
-    function init_main_category_button() {
-        function _() {
-            var cat = $('#id_category').val() + '';
-            if (cat.length <= 1) {
-                $('.js-placement-main-category').closest('p').hide();
-            }
-            else {
-                $('.js-placement-main-category').closest('p').show();
+        for (var i = 0; i < possible_rows.length; i++) {
+            var $r = $(possible_rows[i]);
+
+            var current_val = $r.find('td.category input.vForeignKeyRawIdAdminField').val();
+
+            if (current_val && current_val !== '#') {
+                if (main_publish_from)
+                    $r.find('td.publish_from input').val(main_publish_from);
+                if (main_publish_to)
+                    $r.find('td.publish_to input').val(main_publish_to);
             }
         }
-        _();
-        $('#id_category').unbind('change', _).bind('change', _);
+    });
+    function init_main_category_button() {
+        $('.js-placement-main-category').closest('p').show();
     }
     init_main_category_button();
     $(document).bind('content_added', init_main_category_button);
