@@ -21,6 +21,7 @@ from ella.core.models import Dependency
 from ella_newman import widgets, utils
 from ella_newman.permission import get_permission, permission_filtered_model_qs, has_category_permission
 from ella_newman.licenses.models import License
+from ella_newman.conf import newman_settings
 
 __all__ = [
     'NewmanRichTextField',
@@ -97,7 +98,7 @@ class NewmanRichTextField(RichTextField):
             raise ValidationError(self.error_messages['syntax_error'])
 
         for n in t.nodelist:
-            if isinstance(n, TextNode):
+            if isinstance(n, TextNode) or n.__class__.__name__ in newman_settings.TAG_WHITELIST:
                 continue
             elif isinstance(n, BoxNode):
                 c = Context()

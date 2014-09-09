@@ -112,3 +112,4 @@ PHOTOS_THUMB_FORMAT = 'thumb'
 
 newman_settings = Settings('ella_newman.conf', 'NEWMAN')
 
+TAG_WHITELIST = ()
